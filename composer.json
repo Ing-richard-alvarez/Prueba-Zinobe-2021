@@ -2,11 +2,14 @@
     "name": "zinobe/zinobe",
     "description": "This project will be a conctact directory",
     "require": {
+        "php": ">=7.2",
         "illuminate/database": "7.0",
         "illuminate/routing": "7.0",
         "illuminate/support": "7.0",
         "twig/twig": "^3.0",
-        "symfony/routing": "5.x-dev" 
+        "league/route": "5.x-dev",
+        "laminas/laminas-diactoros": "2.4.x-dev",
+        "laminas/laminas-httphandlerrunner": "1.2.x-dev" 
     },
     "autoload": {
         "psr-4": {

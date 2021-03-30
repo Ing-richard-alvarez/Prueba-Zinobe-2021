@@ -1,16 +1,20 @@
-<?php
+<?php declare(strict_types=1);
 
-use App\Controllers\UserController;
-use Symfony\Component\Routing\Loader\Configurator\RoutingConfigurator;
+require 'vendor/autoload.php';
 
-return function (RoutingConfigurator $routes) {
-    error_log(__METHOD__.' file ');
-    $routes->add('home', '/')
-        // the controller value has the format [controller_class, method_name]
-        ->controller([UserController::class, 'index'])
-    ;
-    $routes->add('login', '/login')
-        // the controller value has the format [controller_class, method_name]
-        ->controller([UserController::class, 'login'])
-    ;
-};
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+
+$request = Laminas\Diactoros\ServerRequestFactory::fromGlobals(
+    $_SERVER, $_GET, $_POST, $_COOKIE, $_FILES
+);
+
+$router = new League\Route\Router;
+
+$router->map('GET', '/', 'App\Controllers\UserController::index');
+$router->map('GET', '/login', 'App\Controllers\AuthController::viewLogin');
+
+$response = $router->dispatch($request);
+
+// send the response to the browser
+(new Laminas\HttpHandlerRunner\Emitter\SapiEmitter)->emit($response);

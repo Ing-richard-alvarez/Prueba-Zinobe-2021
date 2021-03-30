@@ -1,45 +1,38 @@
 <?php 
 namespace App\Controllers;
 
-require '../../vendor/autoload.php';
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Auth;
+require 'vendor/autoload.php';
 
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use Zend\Diactoros\Response;
 
 use Carbon\Carbon;
 
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Routing\Annotation\Route;
 
 use App\Models\User;
 
-class UserController extends AbstractController{
-
-    $templateDir = './resources/views';
-    $loader = new \Twig\Loader\FilesystemLoader($templateDir);
-    $twig = new \Twig\Environment($loader);
-
+class UserController {
     
     /**
-     * @Route("/", name="home")
+     * Controller.
+     *
+     * @param \Psr\Http\Message\ServerRequestInterface $request
+     *
+     * @return \Psr\Http\Message\ResponseInterface
      */
-    public function index() 
-    {
-        error_log(__METHOD__.' Home ');
-        return $twig->render('index.twig', ['the' => 'variables', 'go' => 'here']);
-    }
 
-    /**
-     * @Route("/login", name="login")
-     */
-    public function login() 
-    {
-        error_log(__METHOD__.' Home ');
-        return $twig->render('auth/login.twig', ['the' => 'variables', 'go' => 'here']);
+    function index(ServerRequestInterface $request): ResponseInterface {
+
+        $templateDir = './resources/views';
+        $loader = new \Twig\Loader\FilesystemLoader($templateDir);
+        $twig = new \Twig\Environment($loader);
+
+        // echo $twig->render('index.twig');
+
+        $response = new Response;
+        $response->getBody()->write( $twig->render('index.twig') );
+        return $response;
     }
 
     public static function create_user($name, $document, $email, $country,$password)
