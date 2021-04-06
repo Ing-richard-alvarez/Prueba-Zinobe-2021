@@ -16,5 +16,6 @@ $router->map('GET', '/login', 'App\Controllers\AuthController::viewLogin');
 
 $response = $router->dispatch($request);
 
+
 // send the response to the browser
 (new Laminas\HttpHandlerRunner\Emitter\SapiEmitter)->emit($response);
