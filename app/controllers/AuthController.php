@@ -28,4 +28,15 @@ class AuthController {
         return $response;
     }
 
+    function viewUserRegister(ServerRequestInterface $request): ResponseInterface {
+
+        $templateDir = './resources/views';
+        $loader = new \Twig\Loader\FilesystemLoader($templateDir);
+        $twig = new \Twig\Environment($loader);
+
+        $response = new Response;
+        $response->getBody()->write( $twig->render('auth/register.twig') );
+        return $response;
+    }
+
 }

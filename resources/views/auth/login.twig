@@ -4,9 +4,63 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Zinobe</title>
+    <title>Zinobe - Login</title>
+    <script src="../public/dist/js/login.js"></script>
 </head>
 <body>
-    <h1>Login</h1>
+    <!--Nav -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="#">Zinobe</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav">
+            <li class="nav-item active">
+              <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/register">Register</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/login">Iniciar Sesión</a>
+            </li>
+          </ul>
+        </div>
+    </nav>
+    <div class="container">
+        <div class="row mt-5">
+            <div class="col-12 col-md-6 mx-auto">
+                <form id="login-form" novalidate onsubmit="javascript:void(0)" autocomplete="off">
+                    <div class="form-row">
+                        <div class="col-12">
+                            <label for="username">Username</label>
+                            <input type="email" class="form-control" name="username" id="username" required>
+                            <div class="valid-feedback">
+                                Looks good!
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="col-12">
+                            <label for="password">Contraseña</label>
+                            <input type="password" class="form-control" name="password" id="password" required>
+                            <div class="valid-feedback">
+                                Looks good!
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row mt-3">
+                        <div class="col-12">
+                            <button id="btn-login-submit" type="button" class="btn btn-primary" style="height: 41px;">
+                                <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                                <strong class="mx-auto" style="letter-spacing: 0.5px;">Login</strong>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>    
+    </div>
 </body>
 </html>
