@@ -6,6 +6,7 @@ import 'bootstrap/dist/js/bootstrap.bundle';
 import '../../../public/dist/css/register.css';
 
 import axios from 'axios';
+import Inputmask from "inputmask";
 
 var _errorList = {
 
@@ -48,6 +49,11 @@ $(document).ready(async function(){
     const $form = $('#register-form');
     const $btnSubmit = $('#btn-register-submit',$form);
     let $countryListSelect = $('#country');
+
+    //Inputmask for document input
+    var input = document.getElementById("document");
+    var inputField= new Inputmask("9999999999");
+    inputField.mask(input);
 
     $form    
         .attr({
@@ -92,10 +98,24 @@ $(document).ready(async function(){
     }
     
     //Send Data
-    $btnSubmit.off().on('click',function(e){
+    $btnSubmit.off().on('click',async function(e){
         e.preventDefault();
-        console.log('se enviaron los datos');
+        //console.log('se enviaron los datos');
         const result = isValid($form);
+
+        if(result) {
+            try {
+
+                await callServiceCreate('register-form');
+
+            } catch (error) {
+
+                console.log(error);
+
+            }
+            
+        }
+
     });
 
 });
@@ -255,4 +275,20 @@ const showError = (error) => {
 
     // put focus around the input
     $element.focus();
+}
+
+const callServiceCreate = async (formId) => {
+    
+    let myForm = document.getElementById(formId);
+    let formData = new FormData(myForm);
+
+    axios.post('/s/service-create', 
+        formData  
+      )
+      .then(function (response) {
+        console.log(response);
+      })
+      .catch(function (error) {
+        console.log(error);
+    });
 }

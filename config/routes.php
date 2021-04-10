@@ -14,6 +14,7 @@ $router = new League\Route\Router;
 $router->map('GET', '/', 'App\Controllers\UserController::index');
 $router->map('GET', '/login', 'App\Controllers\AuthController::viewLogin');
 $router->map('GET', '/register', 'App\Controllers\AuthController::viewUserRegister');
+$router->map('POST', '/s/service-create', 'App\Controllers\UserController::serviceCreateUser');
 
 $response = $router->dispatch($request);
 
