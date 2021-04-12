@@ -19,7 +19,9 @@ yarn install
 ## Configuración de la base de datos
 En este paso necesitamos crear una base de datos en Mysql, talvez algunos tenga alguna aplicación del lado del cliente como mysql workbench, heidisql etc.
 
-una vez que tengamos creada la base de datos, abrimos la terminal de comando, nos ubicamos en la ruta donde se encuentra nuestro repositorio y nos movemos al directorio config que se encuentra en la raiz de nuestro proyecto, para eso ejecutamos el siguiente comando:
+Luego de haber exportado nuestra base de datos, procedemos a importar el esquema base para este proyecto y para ello debemos ir a la carpeta o directorio database y hacemos usos del archivo dump.sql, este archivo debemos importarlo en nuestra base de datos, anteriormente creada.
+
+una vez que tengamos realizados los pasos previos, abrimos la terminal de comando, nos ubicamos en la ruta donde se encuentra nuestro repositorio y nos movemos al directorio config que se encuentra en la raiz de nuestro proyecto, para eso ejecutamos el siguiente comando:
 
 ```bash
 cd config
