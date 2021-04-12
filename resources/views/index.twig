@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Zinobe</title>
+  
+    <script src="../public/dist/js/index.js"></script>
+    
+</head>
+<body>
+    <!--Nav -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="/">Zinobe</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav">
+            <li class="nav-item active">
+              <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
+            </li>
+            {% if isLogged == false %}
+            <li class="nav-item">
+              <a class="nav-link" href="/register">Register</a>
+            </li>
+            {% endif %}
+            {% if isLogged == false %}
+            <li class="nav-item">
+              <a class="nav-link" href="/login">Iniciar Sesión</a>
+            </li>
+            {% else %}
+            <li class="nav-item">
+              <a class="nav-link" href="/logout">Cerrar Sesión</a>
+            </li>
+            {% endif %}
+          </ul>
+        </div>
+    </nav>
+    <div class="container">
+        {% if isLogged == true %}
+        <input type="hidden" name="current-id" id="current-id" value="{{currentId}}" />
+        <div class="row mt-3">
+            <div class="col-12 col-md-6 mx-auto">
+                <div class="form-group">
+                    <label for="txt-search-contact">Buscar Contacto</label>
+                    <input type="text" class="form-control" name="txt-search-contact" id="txt-search-contact" />
+                </div>
+            </div>
+        </div>    
+        <div class="row">
+            <div class="col-12  col-md-6 mx-auto">
+                <div class="form-group">
+                    <a href="javascript:;" class="btn btn-primary" id="btn-search-contact">search</a>
+                </div>
+            </div>
+        </div>    
+    </div>
+    {% else %}
+    <div class="row mt-5">
+        <div class="col-12 col-md-6 mx-auto">
+            <h1 class="text-center">Bienvenido al directorio de zinobe</h1>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="modal" tabindex="-1" id="modal-result-search">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Resultado de la búsqueda</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% verbatim %}
+    <script id="result-request" type="text/x-handlebars-template">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 col-md-6">
+                    <p class="font-weight-bold">Primer Nombre: </p>
+                </div>
+                <div class="col-12 col-md-6">
+                    <p class="font-weight-normal">{{first_name}}</p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12 col-md-6">
+                    <p class="font-weight-bold">Primer Apellido: </p>
+                </div>
+                <div class="col-12 col-md-6">
+                    <p class="font-weight-normal">{{last_name}}</p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12 col-md-6">
+                    <p class="font-weight-bold">Documento: </p>
+                </div>
+                <div class="col-12 col-md-6">
+                    <p class="font-weight-normal">{{document}}</p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12 col-md-6">
+                    <p class="font-weight-bold">Email: </p>
+                </div>
+                <div class="col-12 col-md-6">
+                    <p class="font-weight-normal">{{email}}</p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12 col-md-6">
+                    <p class="font-weight-bold">Nùmero de teléfono: </p>
+                </div>
+                <div class="col-12 col-md-6">
+                    <p class="font-weight-normal">{{phone_number}}</p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12 col-md-6">
+                    <p class="font-weight-bold">Cargo: </p>
+                </div>
+                <div class="col-12 col-md-6">
+                    <p class="font-weight-normal">{{job_title}}</p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12 col-md-6">
+                    <p class="font-weight-bold">Pais: </p>
+                </div>
+                <div class="col-12 col-md-6">
+                    <p class="font-weight-normal">{{country}}</p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12 col-md-6">
+                    <p class="font-weight-bold">Estado: </p>
+                </div>
+                <div class="col-12 col-md-6">
+                    <p class="font-weight-normal">{{state}}</p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12 col-md-6">
+                    <p class="font-weight-bold">Ciudad: </p>
+                </div>
+                <div class="col-12 col-md-6">
+                    <p class="font-weight-normal">{{city}}</p>
+                </div>
+            </div>
+        </div>
+    </script>
+    {% endverbatim %}
+</body>
+</html>
