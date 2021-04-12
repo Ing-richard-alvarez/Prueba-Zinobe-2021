@@ -3,7 +3,6 @@ import "regenerator-runtime/runtime";
 
 import $ from 'jquery';
 import 'bootstrap/dist/js/bootstrap.bundle';
-import '../../../public/dist/css/register.css';
 
 import axios from 'axios';
 import Inputmask from "inputmask";

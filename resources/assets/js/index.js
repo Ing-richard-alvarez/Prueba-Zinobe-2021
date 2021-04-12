@@ -2,13 +2,12 @@ import "core-js/stable";
 import "regenerator-runtime/runtime";
 
 import $ from 'jquery';
-import '../../../public/dist/css/index.css';
 import 'bootstrap/dist/js/bootstrap.bundle';
 
 import axios from 'axios';
 import findKey from 'lodash/findKey';
-import Handlebars from 'handlebars';
 
+const Handlebars = require('handlebars');
 
 $(document).ready(async function(){
     
