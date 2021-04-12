@@ -3,7 +3,6 @@ import "regenerator-runtime/runtime";
 
 import $ from 'jquery';
 import 'bootstrap/dist/js/bootstrap.bundle';
-import '../../../public/dist/css/login.css';
 
 import axios from 'axios';
 import Swal from 'sweetalert2';

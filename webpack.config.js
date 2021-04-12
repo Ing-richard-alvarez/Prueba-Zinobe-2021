@@ -3,31 +3,9 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = [
     {
-        entry: './resources/assets/js/index.js',
-        output: {
-            path: path.resolve(__dirname, 'public/dist/js'),
-            filename: 'index.js'
-        },
-        module: {
-            rules: [
-                {
-                  test: /\.js$/,
-                  use: {
-                    loader: 'babel-loader',
-                    options: {
-                      presets: ['@babel/preset-env']
-                    }
-                  },
-                  exclude: /node_modules/
-                }
-            ]
-        },
-        mode: "development"
-    },
-    {
         entry: './resources/assets/css/index.scss',
         output: {
-            path: path.resolve(__dirname, 'public/dist/css'),
+            path: path.resolve(__dirname, './public/dist/css'),
             filename: 'index.css'
         },
         module: {
@@ -42,10 +20,16 @@ module.exports = [
         mode: "development"
     },
     {
-        entry: './resources/assets/js/login.js',
+        entry: './resources/assets/js/index.js',
         output: {
-            path: path.resolve(__dirname, 'public/dist/js'),
-            filename: 'login.js'
+            path: path.resolve(__dirname, './public/dist/js'),
+            filename: 'index.js'
+        },
+        resolve: {
+            alias: {
+              components: path.resolve(__dirname, 'resources/assets/js'),
+            },
+            extensions: ['.js'],
         },
         module: {
             rules: [
@@ -56,7 +40,8 @@ module.exports = [
                     options: {
                       presets: ['@babel/preset-env']
                     }
-                  }
+                  },
+                  exclude: /node_modules/
                 }
             ]
         },
@@ -80,10 +65,10 @@ module.exports = [
         mode: "development"
     },
     {
-        entry: './resources/assets/js/register.js',
+        entry: './resources/assets/js/login.js',
         output: {
-            path: path.resolve(__dirname, 'public/dist/js'),
-            filename: 'register.js'
+            path: path.resolve(__dirname, './public/dist/js'),
+            filename: 'login.js'
         },
         module: {
             rules: [
@@ -94,7 +79,8 @@ module.exports = [
                     options: {
                       presets: ['@babel/preset-env']
                     }
-                  }
+                  },
+                  exclude: /node_modules/
                 }
             ]
         },
@@ -103,7 +89,7 @@ module.exports = [
     {
         entry: './resources/assets/css/register.scss',
         output: {
-            path: path.resolve(__dirname, 'public/dist/css'),
+            path: path.resolve(__dirname, './public/dist/css'),
             filename: 'register.css'
         },
         module: {
@@ -118,5 +104,28 @@ module.exports = [
             ]
         },
         mode: "development"
+    },
+    {
+        entry: './resources/assets/js/register.js',
+        output: {
+            path: path.resolve(__dirname, './public/dist/js'),
+            filename: 'register.js'
+        },
+        module: {
+            rules: [
+                {
+                  test: /\.js$/,
+                  use: {
+                    loader: 'babel-loader',
+                    options: {
+                      presets: ['@babel/preset-env']
+                    }
+                  },
+                  exclude: /node_modules/
+                }
+            ]
+        },
+        mode: "development"
     }
+    
 ];
