@@ -2,16 +2,21 @@
 namespace App\Controllers;
 
 require 'vendor/autoload.php';
+require 'config/database.php';
+
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Zend\Diactoros\Response;
+use Zend\Diactoros\Response\RedirectResponse;
 use Zend\Diactoros\Response\JsonResponse;
+
+use Illuminate\Support\Facades\Hash;
 
 use Carbon\Carbon;
 
-
+use App\Models\Database;
 use App\Models\User;
 
 class UserController {
@@ -32,21 +37,28 @@ class UserController {
 
         // echo $twig->render('index.twig');
 
+        error_log(__METHOD__.' logged => '.$this->isLogged());
+
         $response = new Response;
-        $response->getBody()->write( $twig->render('index.twig') );
+        $response->getBody()->write( $twig->render('index.twig',[
+            'isLogged' => $this->isLogged(),
+            'currentId' => isset($_SESSION['id'])? $_SESSION['id'] : ''
+            ]) 
+        );
         return $response;
     }
 
     public static function create_user($name, $document, $email, $country,$password)
     {
-        
+       
+
         $user = User::create(
             [
                 'name' => $name,
                 'document' => $document,
                 'email' => $email,
                 'country' => $country,
-                'password' => $password
+                'password' => Hash::make($password)
             ]
         );
 
@@ -67,7 +79,7 @@ class UserController {
 
         // Create RuleList for validate every params
         $ruleList = [
-            "name" => [
+            "username" => [
                 "required" => true,
                 "dataType" => "text"
             ],
@@ -83,7 +95,7 @@ class UserController {
                 "required" => true,
                 "dataType" => "text"
             ],
-            "password" => [
+            "pass" => [
                 "required" => true,
                 "dataType" => "text"
             ],
@@ -95,13 +107,79 @@ class UserController {
 
         $isValid = $this->validateParams($params,$ruleList);
 
-        error_log(__METHOD__.' is valid => '.var_export($isValid,true));
+        if(!$isValid) {
+            $response = new JsonResponse(
+                $isValid,
+                500,
+                ['Content-Type' => ['application/hal+json']]
+            );
+
+            return $response;
+
+        }
+
+        
+        $existEmailUser = User::where('email','=',$params['email'])->exists();
+        $existDocumentlUser = User::where('document','=',$params['document'])->exists();
+
+        if($existDocumentlUser) {
+            $response = new JsonResponse(
+                [
+                    "error" => 'document',
+                    "errorType" => "already_registered"
+                ],
+                500,
+                ['Content-Type' => ['application/hal+json']]
+            );
+
+            return $response;
+        }
+
+        if($existEmailUser) {
+            $response = new JsonResponse(
+                [
+                    "error" => 'email',
+                    "errorType" => "already"
+                ],
+                500,
+                ['Content-Type' => ['application/hal+json']]
+            );
+
+            return $response;
+        }
+
+        try {
+            
+            $user = User::create(
+                [
+                    'username' => $params['name'],
+                    'document' => $params['document'],
+                    'email' => $params['email'],
+                    'country' => $params['country'],
+                    'pass' => password_hash($params['password'], PASSWORD_DEFAULT)
+                ]
+            );
+
+        } catch (\Throwable $th) {
+            error_log(__METHOD__.' Error => '.var_export($th,true));
+
+            $response = new JsonResponse(
+                [
+                    "error" => "InternalServerError"
+                ],
+                500,
+                ['Content-Type' => ['application/hal+json']]
+            );
+
+            return $response;
+
+        }
 
         $response = new JsonResponse(
-            $result,
-            500,
+            [],
+            200,
             ['Content-Type' => ['application/hal+json']]
-        );
+        );  
 
         return $response;
 
@@ -151,10 +229,46 @@ class UserController {
                         "error" => $key,
                         "errorType" => "invalid"
                     ];
+                } elseif(
+                    isset($value['dataType']) &&
+                    array_key_exists('dataType',$value) &&
+                    trim($value['dataType']) == "email" &&
+                    trim($params[$key]) == ""
+                ){
+                    return [
+                        "error" => $key,
+                        "errorType" => "required"
+                    ];
+                } elseif(
+                    isset($value['dataType']) &&
+                    array_key_exists('dataType',$value) &&
+                    trim($value['dataType']) == "email" &&
+                    !preg_match("/^([a-z0-9\+_\-]+)(\.[a-z0-9\+_\-]+)*@([a-z0-9\-]+\.)+[a-z]{2,6}$/ix", $params[$key])
+                ) {
+                    return [
+                        "error" => $key,
+                        "errorType" => "invalid"
+                    ];
                 }
                 //error_log(__METHOD__.' Params => '.var_export($value,true));
             }
         }
+
+        return true;
+    }
+
+    public function isLogged()
+    {
+        if(
+            !(
+                isset( $_SESSION['loggedin']) &&
+                $_SESSION['loggedin'] == true
+            )
+        ) {
+            return false;
+        }
+
+        return true;
     }
 
 }

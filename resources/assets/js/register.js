@@ -7,6 +7,10 @@ import '../../../public/dist/css/register.css';
 
 import axios from 'axios';
 import Inputmask from "inputmask";
+import Swal from 'sweetalert2'
+
+import  {isObject} from 'lodash/isObject';
+import  {isNull} from 'lodash/isNull';
 
 var _errorList = {
 
@@ -28,7 +32,8 @@ var _errorList = {
     },
     'email' : {
         'required': 'requerido',
-        'invalid': 'Ingrese un email valido.'
+        'invalid': 'Ingrese un email valido.',
+        'already': 'Existe un usuario con este email.'
     },
     'country' : {
         'required': 'requerido',
@@ -36,23 +41,30 @@ var _errorList = {
     },
     'password' : {
         'required': 'requerido',
-        'invalid': 'Ingrese una contraseña.'
+        'invalid': 'Ingrese una contraseña.',
+        'minimalValue': 'Minimo se requieren 6 caracteres.'
     },
     'confirm-password' : {
         'required': 'requerido',
-        'invalid': 'No coinciden las contraseñas.'
+        'invalid': 'No coinciden las contraseñas.',
+        'error_confirm': 'Las contraseñas no coinciden',
+        'minimalValue': 'Minimo se requieren 6 caracteres.'
     }
 
 };
 
+var sendingRequest = false;
+
+
 $(document).ready(async function(){
-    const $form = $('#register-form');
+    
     const $btnSubmit = $('#btn-register-submit',$form);
     let $countryListSelect = $('#country');
+    const $form = $('#register-form');
 
     //Inputmask for document input
     var input = document.getElementById("document");
-    var inputField= new Inputmask("9999999999");
+    var inputField= new Inputmask({ regex: "\\d*" });
     inputField.mask(input);
 
     $form    
@@ -100,17 +112,41 @@ $(document).ready(async function(){
     //Send Data
     $btnSubmit.off().on('click',async function(e){
         e.preventDefault();
-        //console.log('se enviaron los datos');
+        
+        //Validate form data
         const result = isValid($form);
+        
+        // Validate passwords if are equals
+        const pass = $form.find("#password").val();
+        const conf_pass = $form.find("#confirm-password").val();
 
-        if(result) {
+        const resultValidatePassword = await validatePassword(pass,conf_pass);
+        
+        if(!resultValidatePassword){
+            
+            const error = {
+                "error" : $form.find("#confirm-password").prop('name'),
+                "input_type" : $form.find("#confirm-password").prop('type'),
+                "errorType" : 'error_confirm'
+            };
+
+            showError(error);
+
+        }
+
+        // console.log('validate pass => ',  resultValidatePassword);
+        if(
+            result && 
+            resultValidatePassword
+        ) {
+
             try {
 
                 await callServiceCreate('register-form');
 
             } catch (error) {
 
-                console.log(error);
+                //console.log(error);
 
             }
             
@@ -217,12 +253,21 @@ const validateFormFields = ($container) => {
                     }
                     break;
                 case 'password':
+                    
+                    const validateLengthPassword = new RegExp("(?=.{6,}).*", "g");
+
                     if(value.trim() == ""){
                         result = {
                             "error" : $this.prop('name'),
                             "input_type" : $this.prop('type'),
                             "errorType" : 'required'
                         } 
+                    } else if( false == validateLengthPassword.test(value) ) {
+                        result = {
+                            "error" : $this.prop('name'),
+                            "input_type" : $this.prop('type'),
+                            "errorType" : 'minimalValue'
+                        }
                     }
                     break;
                 default:
@@ -244,6 +289,20 @@ const validateFormFields = ($container) => {
     
     return true;
     
+}
+
+const validatePassword = async (pass, confirm_pass) => {
+    
+    if(
+        pass.trim() !== "" &&
+        confirm_pass.trim() !== "" &&
+        pass !== confirm_pass
+    )
+    {
+        return false;
+    }
+
+    return true;
 }
 
 const cleanErrors = ($container) => {
@@ -279,16 +338,90 @@ const showError = (error) => {
 
 const callServiceCreate = async (formId) => {
     
-    let myForm = document.getElementById(formId);
-    let formData = new FormData(myForm);
+    let form = document.getElementById(formId);
+    let formData = new FormData(form);
+    const $form = $('#register-form');
+    let $btnSubmit = $form.find('#btn-register-submit');
+    
+    if(sendingRequest) {
+        return;
+    }
+
+    sendingRequest = true;
+
+    $btnSubmit.prop('disabled',true)
+        .find('.spinner-border')
+        .removeClass('d-none')
+    ;
 
     axios.post('/s/service-create', 
-        formData  
-      )
-      .then(function (response) {
-        console.log(response);
-      })
-      .catch(function (error) {
-        console.log(error);
-    });
+            formData  
+        )
+        .then(function (response) {
+            console.log(response);
+        
+            Swal.fire({
+                position: 'center',
+                icon: 'success',
+                title: 'Registro Completado Exitosamente',
+                showConfirmButton: false,
+                timer: 1500
+            });
+
+            form.reset();
+
+        })
+        .catch(function (error) {
+            
+            const errorData = error.response.data;
+            let msg = "";
+            if(
+                isObject(errorData) &&
+                !isNull(errorData.error)
+            ) {
+                
+                msg = _errorList[errorData.error];
+
+                if(
+                    isObject( _errorList[errorData.error] ) &&
+                    !isNull(errorData.errorType)
+                ) {
+                    console.log( 'msg' ,_errorList[errorData.error][errorData.errorType] );
+                    msg = _errorList[errorData.error][errorData.errorType];
+                }
+
+            
+                
+                //console.log( typeof _errorList[errorData.error]);
+
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: msg
+                })
+
+            }
+            
+            sendingRequest = false;
+
+            $btnSubmit.prop('disabled',false)
+                .find('.spinner-border')
+                .addClass('d-none')
+            ;
+
+        })
+    ;
+
+    sendingRequest = false;
+
+    setTimeout(function(){ 
+        $btnSubmit.prop('disabled',false)
+            .find('.spinner-border')
+            .addClass('d-none')
+        ; 
+
+    }, 1000);
+    
+
 }
+

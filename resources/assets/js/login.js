@@ -1,6 +1,17 @@
+import "core-js/stable";
+import "regenerator-runtime/runtime";
+
 import $ from 'jquery';
 import 'bootstrap/dist/js/bootstrap.bundle';
 import '../../../public/dist/css/login.css';
+
+import axios from 'axios';
+import Swal from 'sweetalert2';
+
+import  isObject from 'lodash/isObject';
+import  isNull from 'lodash/isNull';
+
+//import 'lodash/isNull';
 
 var _errorList = {
 
@@ -13,7 +24,8 @@ var _errorList = {
 
     'username' : {
         'required': 'requerido',
-        'invalid': 'Ingrese un nombre de usuario vàlido.'
+        'invalid': 'Ingrese un nombre de usuario vàlido.',
+        'notfound': 'Verifique sus credenciales (usuario/contraseña)'
     },
     'password' : {
         'required': 'requerido',
@@ -22,10 +34,12 @@ var _errorList = {
 
 };
 
+var sendingRequest = false;
+
 $(document).ready(function(){
     
     const $form = $('#login-form');
-    const $btnSubmit = $('#btn-login-submit');
+    const $btnSubmit = $('#btn-login-submit',$form);
 
     $form    
         .attr({
@@ -59,11 +73,24 @@ $(document).ready(function(){
     ;
     
     // send data
-    $btnSubmit.off().on('click',function(e){
+    $btnSubmit.off().on('click', async function(e){
         e.preventDefault();
 
         const result = isValid($form);
 
+        if(result) {
+
+            try {
+
+                await callServiceCreate('login-form');
+
+            } catch (error) {
+
+                //console.log(error);
+
+            }
+
+        }
     }) 
 
 });
@@ -219,4 +246,87 @@ const showError = (error) => {
 
     // put focus around the input
     $element.focus();
+}
+
+const callServiceCreate = async (formId) => {
+    console.log('form id => ', formId);
+    let form = document.getElementById(formId);
+    let formData = new FormData(form);
+    const $form = $('#login-form');
+    let $btnSubmit = $form.find('#btn-login-submit');
+    
+    if(sendingRequest) {
+        return;
+    }
+
+    sendingRequest = true;
+
+    $btnSubmit.prop('disabled',true)
+        .find('.spinner-border')
+        .removeClass('d-none')
+    ;
+
+    axios.post('/s/service-login', 
+            formData  
+        )
+        .then(function (response) {
+            console.log(response);
+        
+            window.location.href = '/';
+            
+            form.reset();
+
+        })
+        .catch(function (error) {
+            
+            const errorData = error.response.data;
+            let msg = "";
+            if(
+                isObject(errorData) &&
+                !isNull(errorData.error)
+            ) {
+                
+                msg = _errorList[errorData.error];
+
+                if(
+                    isObject( _errorList[errorData.error] ) &&
+                    !isNull(errorData.errorType)
+                ) {
+                    console.log( 'msg' ,_errorList[errorData.error][errorData.errorType] );
+                    msg = _errorList[errorData.error][errorData.errorType];
+                }
+
+            
+                
+                //console.log( typeof _errorList[errorData.error]);
+
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: msg
+                })
+
+            }
+            
+            sendingRequest = false;
+
+            $btnSubmit.prop('disabled',false)
+                .find('.spinner-border')
+                .addClass('d-none')
+            ;
+
+        })
+    ;
+
+    sendingRequest = false;
+
+    setTimeout(function(){ 
+        $btnSubmit.prop('disabled',false)
+            .find('.spinner-border')
+            .addClass('d-none')
+        ; 
+
+    }, 1000);
+    
+
 }
