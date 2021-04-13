@@ -79,7 +79,7 @@ class UserController {
 
         // Create RuleList for validate every params
         $ruleList = [
-            "username" => [
+            "name" => [
                 "required" => true,
                 "dataType" => "text"
             ],
@@ -95,7 +95,7 @@ class UserController {
                 "required" => true,
                 "dataType" => "text"
             ],
-            "pass" => [
+            "password" => [
                 "required" => true,
                 "dataType" => "text"
             ],

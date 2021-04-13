@@ -66,6 +66,7 @@
     </div>
     {% endif %}
 
+    <!--Modals to show result -->
     <div class="modal" tabindex="-1" id="modal-result-search">
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
@@ -77,6 +78,23 @@
                 </div>
                 <div class="modal-body">
                     
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal to show the loading of the contact list -->
+    <div class="modal fade" id="modal-loading-contact-list" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body">
+                   <div class="text-center">
+                        <div class="spinner-border" style="width: 3rem; height: 3rem;" role="status" aria-hidden="true">
+                        </div>
+                    </div>
+                    <div class="text-center">
+                        <strong>Cargando lista de contactos ...</strong>
+                    </div>
                 </div>
             </div>
         </div>
