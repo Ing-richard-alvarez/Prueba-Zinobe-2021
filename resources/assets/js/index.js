@@ -5,9 +5,9 @@ import $ from 'jquery';
 import 'bootstrap/dist/js/bootstrap.bundle';
 
 import axios from 'axios';
-import findKey from 'lodash/findKey';
+import _ from 'lodash';
 
-const Handlebars = require('handlebars');
+import Handlebars from 'handlebars/dist/cjs/handlebars';
 
 $(document).ready(async function(){
     
@@ -17,13 +17,16 @@ $(document).ready(async function(){
     const $inputCurrentId = $('#current-id');
     const $btnSearch = $("#btn-search-contact");
     const $modalSearchResult = $("#modal-result-search");
+    const $modalContactList = $("#modal-loading-contact-list");
     
     // create localstorage for save all contact from the api
     if(!localStorage.getItem('contact-list')){
+        $modalContactList.modal('show');
         const contact = await getContactList();
         localStorage.setItem('contact-list',JSON.stringify(contact.data.objects));
         contactList = localStorage.getItem('contact-list');
-        console.log('creating localstorage');
+        $modalContactList.modal('hide');
+        console.log('contact list has been created');
     } else {
         contactList = JSON.parse(localStorage.getItem('contact-list'));
     }
@@ -37,7 +40,7 @@ $(document).ready(async function(){
         
         // variables for search contanct from localstorage object
         const userDocumentFound =  
-            findKey(
+            _.findKey(
                 contactList, 
                 function(contact) { 
                     return contact.document == inputSearch.charAt(0).toUpperCase() + inputSearch.slice(1); 
@@ -45,7 +48,7 @@ $(document).ready(async function(){
             )
         ;
         const userNameFound =  
-            findKey(
+            _.findKey(
                 contactList, 
                 function(contact) { 
                     return contact.first_name == inputSearch.charAt(0).toUpperCase() + inputSearch.slice(1); 
@@ -53,7 +56,7 @@ $(document).ready(async function(){
             )
         ;
         const userEmailFound = 
-            findKey(
+            _.findKey(
                 contactList, 
                 function(contact) { 
                     return contact.email == inputSearch; 

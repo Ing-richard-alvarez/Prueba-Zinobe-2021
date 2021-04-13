@@ -1,5 +1,7 @@
 const path = require('path');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+//const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const LodashModuleReplacementPlugin = require('lodash-webpack-plugin');
+const TerserPlugin = require("terser-webpack-plugin");
 
 module.exports = [
     {
@@ -34,16 +36,40 @@ module.exports = [
         module: {
             rules: [
                 {
-                  test: /\.js$/,
-                  use: {
-                    loader: 'babel-loader',
-                    options: {
-                      presets: ['@babel/preset-env']
+                    test: /\.js$/,
+                    exclude: /node_modules/,
+                    use: {
+                        loader: 'babel-loader',
+                        options: {
+                            'plugins': ['lodash'],
+                            'presets': [['@babel/preset-env', {
+                                targets: [
+                                'last 2 versions',
+                                'not dead',
+                                '> 0.2%',
+                                'not ie 11'
+                                ],
+                                useBuiltIns: 'entry',
+                                corejs: 3            
+                            }]]
+                        }
                     }
-                  },
-                  exclude: /node_modules/
                 }
             ]
+        },
+        'plugins': [
+            new LodashModuleReplacementPlugin({
+                'collections': true,
+                'paths': true
+            })
+        ],
+        optimization: {
+            minimize: true,
+            minimizer: [
+              new TerserPlugin({
+                parallel: true,
+              }),
+            ],
         },
         mode: "development"
     },
@@ -73,16 +99,40 @@ module.exports = [
         module: {
             rules: [
                 {
-                  test: /\.js$/,
-                  use: {
-                    loader: 'babel-loader',
-                    options: {
-                      presets: ['@babel/preset-env']
+                    test: /\.js$/,
+                    exclude: /node_modules/,
+                    use: {
+                        loader: 'babel-loader',
+                        options: {
+                            'plugins': ['lodash'],
+                            'presets': [['@babel/preset-env', {
+                                targets: [
+                                'last 2 versions',
+                                'not dead',
+                                '> 0.2%',
+                                'not ie 11'
+                                ],
+                                useBuiltIns: 'entry',
+                                corejs: 3            
+                            }]]
+                        }
                     }
-                  },
-                  exclude: /node_modules/
                 }
             ]
+        },
+        'plugins': [
+            new LodashModuleReplacementPlugin({
+                'collections': true,
+                'paths': true
+            })
+        ],
+        optimization: {
+            minimize: true,
+            minimizer: [
+              new TerserPlugin({
+                parallel: true,
+              }),
+            ],
         },
         mode: "development"
     },
@@ -114,16 +164,40 @@ module.exports = [
         module: {
             rules: [
                 {
-                  test: /\.js$/,
-                  use: {
-                    loader: 'babel-loader',
-                    options: {
-                      presets: ['@babel/preset-env']
+                    test: /\.js$/,
+                    exclude: /node_modules/,
+                    use: {
+                        loader: 'babel-loader',
+                        options: {
+                            'plugins': ['lodash'],
+                            'presets': [['@babel/preset-env', {
+                                targets: [
+                                'last 2 versions',
+                                'not dead',
+                                '> 0.2%',
+                                'not ie 11'
+                                ],
+                                useBuiltIns: 'entry',
+                                corejs: 3            
+                            }]]
+                        }
                     }
-                  },
-                  exclude: /node_modules/
                 }
             ]
+        },
+        'plugins': [
+            new LodashModuleReplacementPlugin({
+                'collections': true,
+                'paths': true
+            })
+        ],
+        optimization: {
+            minimize: true,
+            minimizer: [
+              new TerserPlugin({
+                parallel: true,
+              }),
+            ],
         },
         mode: "development"
     }

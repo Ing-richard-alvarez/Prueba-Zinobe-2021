@@ -7,10 +7,7 @@ import 'bootstrap/dist/js/bootstrap.bundle';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 
-import  isObject from 'lodash/isObject';
-import  isNull from 'lodash/isNull';
-
-//import 'lodash/isNull';
+import _ from 'lodash';
 
 var _errorList = {
 
@@ -281,15 +278,15 @@ const callServiceCreate = async (formId) => {
             const errorData = error.response.data;
             let msg = "";
             if(
-                isObject(errorData) &&
-                !isNull(errorData.error)
+                _.isObject(errorData) &&
+                !_.isNull(errorData.error)
             ) {
                 
                 msg = _errorList[errorData.error];
 
                 if(
-                    isObject( _errorList[errorData.error] ) &&
-                    !isNull(errorData.errorType)
+                    _.isObject( _errorList[errorData.error] ) &&
+                    !_.isNull(errorData.errorType)
                 ) {
                     console.log( 'msg' ,_errorList[errorData.error][errorData.errorType] );
                     msg = _errorList[errorData.error][errorData.errorType];

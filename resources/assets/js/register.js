@@ -8,8 +8,7 @@ import axios from 'axios';
 import Inputmask from "inputmask";
 import Swal from 'sweetalert2'
 
-import  {isObject} from 'lodash/isObject';
-import  {isNull} from 'lodash/isNull';
+import _ from 'lodash';
 
 var _errorList = {
 
@@ -27,12 +26,12 @@ var _errorList = {
     'document' : {
         'required': 'requerido',
         'invalid': 'Ingrese su número de identificación.',
-        'already_registered': 'Documento existente.'
+        'already_registered': 'Existe un usuario con el numero de documento ingresado.'
     },
     'email' : {
         'required': 'requerido',
         'invalid': 'Ingrese un email valido.',
-        'already': 'Existe un usuario con este email.'
+        'already': 'Existe un usuario con el email ingresado.'
     },
     'country' : {
         'required': 'requerido',
@@ -375,15 +374,15 @@ const callServiceCreate = async (formId) => {
             const errorData = error.response.data;
             let msg = "";
             if(
-                isObject(errorData) &&
-                !isNull(errorData.error)
+                _.isObject(errorData) &&
+                !_.isNull(errorData.error)
             ) {
                 
                 msg = _errorList[errorData.error];
 
                 if(
-                    isObject( _errorList[errorData.error] ) &&
-                    !isNull(errorData.errorType)
+                    _.isObject( _errorList[errorData.error] ) &&
+                    !_.isNull(errorData.errorType)
                 ) {
                     console.log( 'msg' ,_errorList[errorData.error][errorData.errorType] );
                     msg = _errorList[errorData.error][errorData.errorType];
