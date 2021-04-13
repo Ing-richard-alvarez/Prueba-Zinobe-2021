@@ -4,6 +4,8 @@ require 'vendor/autoload.php';
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Zend\Diactoros\Response\RedirectResponse;
+use League\Route\Http\Exception\NotFoundException;
 
 $request = Laminas\Diactoros\ServerRequestFactory::fromGlobals(
     $_SERVER, $_GET, $_POST, $_COOKIE, $_FILES
@@ -19,9 +21,11 @@ $router->map('POST', '/s/service-create', 'App\Controllers\UserController::servi
 $router->map('POST', '/s/service-login', 'App\Controllers\AuthController::serviceLogin');
 $router->map('POST', '/s/service-save-request', 'App\Controllers\RequestController::serviceSaveRequest');
 
+try {
+    $response = $router->dispatch($request);
+} catch (\Throwable $th) {
+    $response = new RedirectResponse('/', 301);
+}
 
-$response = $router->dispatch($request);
-
-
-// send the response to the browser
 (new Laminas\HttpHandlerRunner\Emitter\SapiEmitter)->emit($response);
+// send the response to the browser
