@@ -29,6 +29,8 @@
     "babel-preset-env": "^1.7.0",
     "bootstrap": "^4.6.0",
     "core-js": "^3.10.0",
+    "datatables.net": "^1.10.24",
+    "datatables.net-dt": "^1.10.24",
     "handlebar": "^1.0.0",
     "inputmask": "^5.0.5",
     "install": "^0.13.0",
