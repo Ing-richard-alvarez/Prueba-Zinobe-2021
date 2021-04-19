@@ -7,17 +7,19 @@ import 'bootstrap/dist/js/bootstrap.bundle';
 import axios from 'axios';
 import _ from 'lodash';
 
+import Handlebars from 'handlebars/dist/handlebars';
+
 //datatable
-import 'datatables.net'
-import 'datatables.net-dt';
+import 'datatables.net-bs4';
+import 'datatables.net-responsive-bs4';
 
 $(document).ready(async function(){
     
     let contactList = {};
     
-    const $inputSearch = $('#txt-search-contact');
+    //const $inputSearch = $('#txt-search-contact');
     const $inputCurrentId = $('#current-id');
-    const $btnSearch = $("#btn-search-contact");
+    //const $btnSearch = $("#btn-search-contact");
     const $modalSearchResult = $("#modal-result-search");
     const $modalContactList = $("#modal-loading-contact-list");
     const $dataTableContact = $('#table_contact');
@@ -34,11 +36,18 @@ $(document).ready(async function(){
     }
     
 
-    // init datatable
+    // init and setup datatable
     const table = $dataTableContact
         .DataTable( {
             "data": contactList,
+            "lengthMenu": [[5,10, 25, 50, -1], [5,10, 25, 50, "Todos"]],
             "columns": [
+                {
+                    "className":      '',
+                    "orderable":      false,
+                    "data":           null,
+                    "defaultContent": "<a href='javascript:;' class='details-user'><i class='far fa-eye'></i></a>"
+                },
                 { "data": "id" },
                 { "data": "first_name" },
                 { "data": "last_name" },
@@ -49,29 +58,9 @@ $(document).ready(async function(){
             ],
             "pagingType": "simple_numbers",
             "language": {
-                "decimal":        "",
-                "emptyTable":     "Datos no disponible en la tabla",
-                "info":           "Mostrando _START_ a _END_ de _TOTAL_ entradas",
-                "infoEmpty":      "Mostrando 0 a 0 de 0 entradas",
-                "infoFiltered":   "(filtrado desde _MAX_ entradas)",
-                "infoPostFix":    "",
-                "thousands":      ",",
-                "lengthMenu":     "Ver _MENU_ entradas",
-                "loadingRecords": "Cargando...",
-                "processing":     "Procesando...",
-                "search":         "Buscar:",
-                "zeroRecords":    "Ningún registro encontrado",
-                "paginate": {
-                    "first":      "Primero",
-                    "last":       "Último",
-                    "next":       "Siguiente",
-                    "previous":   "Anterior"
-                },
-                "aria": {
-                    "sortAscending":  ": activate to sort column ascending",
-                    "sortDescending": ": activate to sort column descending"
-                }
-            }
+                "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Spanish.json"
+            },
+            "responsive": true
         } )
     ;
 
@@ -131,6 +120,20 @@ $(document).ready(async function(){
         }
 
     });
+
+    $dataTableContact.find('tbody').on('click', 'a.details-user',function(){
+        
+        const tr = $(this).closest('tr');
+        const row = table.row( tr );
+        
+        const source = document.getElementById("result-request").innerHTML;
+        const template = Handlebars.compile(source);
+        const html = template(row.data());
+    
+        $modalSearchResult.find('.modal-body').empty().append(html);
+        $modalSearchResult.modal('show');
+    
+    });
    
 });
 
@@ -160,3 +163,4 @@ const callServiceSaveRequest = async (userId,metadata) => {
     ;
 
 }
+
