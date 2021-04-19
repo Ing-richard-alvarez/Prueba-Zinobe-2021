@@ -7,25 +7,38 @@
     <title>Zinobe</title>
 
     <script src="../public/dist/css/index.css"></script>
+    <link rel="stylesheet" href="../../node_modules/datatables.net-bs4/css/dataTables.bootstrap4.min.css">
+    
 {% endblock head %}
 
 {% block content %}
     {% if isLogged == true %}
         <input type="hidden" name="current-id" id="current-id" value="{{currentId}}" />
-        <div class="row mt-3">
-            <div class="col-12 col-md-6 mx-auto">
-                <div class="form-group">
-                    <label for="txt-search-contact">Buscar Contacto</label>
-                    <input type="text" class="form-control" name="txt-search-contact" id="txt-search-contact" />
-                </div>
+
+        <div class="row my-2">
+            <div class="col-12">
+                <h2 class="text-center">Lista de contactos de zinobe</h2>
             </div>
-        </div>    
-        <div class="row">
-            <div class="col-12  col-md-6 mx-auto">
-                <div class="form-group">
-                    <a href="javascript:;" class="btn btn-primary" id="btn-search-contact">search</a>
-                </div>
-            </div>
+        </div>
+
+        <div class="row my-2">
+            <div class="col-12  mb-4 mx-auto table-responsive">
+                <table id="table_contact" class="w-100 table table-striped table-bordered">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>#</th>
+                            <th>Nombre</th>
+                            <th>Apellido</th>
+                            <th>Correo</th>
+                            <th>Documento</th>
+                            <th>Empleo</th>
+                            <th>País</th>
+                        </tr>
+                    </thead>
+                </table>
+
+            </div>  
         </div>    
     {% else %}
         <div class="row mt-5">
@@ -70,7 +83,6 @@
             </div>
         </div>
     </div>
-
 {% endblock modalsWindow %}
 
 {% block handlebarsTemplate %}
@@ -155,5 +167,6 @@
 {% endblock handlebarsTemplate %}
 
 {% block scripts %}
+<script src="https://kit.fontawesome.com/f2664c7cd7.js" crossorigin="anonymous"></script>
     <script src="../public/dist/js/index.js"></script>
 {% endblock scripts %}

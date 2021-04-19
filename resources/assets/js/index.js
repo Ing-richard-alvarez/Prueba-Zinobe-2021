@@ -7,43 +7,80 @@ import 'bootstrap/dist/js/bootstrap.bundle';
 import axios from 'axios';
 import _ from 'lodash';
 
-import Handlebars from 'handlebars/dist/cjs/handlebars';
+import Handlebars from 'handlebars/dist/handlebars';
+
+//datatable
+import 'datatables.net-bs4';
+import 'datatables.net-responsive-bs4';
 
 $(document).ready(async function(){
     
     let contactList = {};
     
-    const $inputSearch = $('#txt-search-contact');
+    //const $inputSearch = $('#txt-search-contact');
     const $inputCurrentId = $('#current-id');
-    const $btnSearch = $("#btn-search-contact");
+    //const $btnSearch = $("#btn-search-contact");
     const $modalSearchResult = $("#modal-result-search");
     const $modalContactList = $("#modal-loading-contact-list");
+    const $dataTableContact = $('#table_contact');
     
-    // create localstorage for save all contact from the api
-    if(!localStorage.getItem('contact-list')){
+    // get all contacts from the api
+    if($dataTableContact.length > 0) {
+        $dataTableContact.addClass('d-none');
         $modalContactList.modal('show');
         const contact = await getContactList();
-        localStorage.setItem('contact-list',JSON.stringify(contact.data.objects));
-        contactList = localStorage.getItem('contact-list');
+        contactList = contact.data.objects;
         $modalContactList.modal('hide');
+        
         console.log('contact list has been created');
-    } else {
-        contactList = JSON.parse(localStorage.getItem('contact-list'));
     }
+    
 
-    // Handling event click of the submit button
-    $btnSearch.off().on('click',async function(e){
+    // init and setup datatable
+    const table = $dataTableContact
+        .DataTable( {
+            "data": contactList,
+            "lengthMenu": [[5,10, 25, 50, -1], [5,10, 25, 50, "Todos"]],
+            "columns": [
+                {
+                    "className":      '',
+                    "orderable":      false,
+                    "data":           null,
+                    "defaultContent": "<a href='javascript:;' class='details-user'><i class='far fa-eye'></i></a>"
+                },
+                { "data": "id" },
+                { "data": "first_name" },
+                { "data": "last_name" },
+                { "data": "email" },
+                { "data": "document" },
+                { "data": "job_title" },
+                { "data": "country" }
+            ],
+            "pagingType": "simple_numbers",
+            "language": {
+                "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Spanish.json"
+            },
+            "responsive": true
+        } )
+    ;
+
+    $dataTableContact.removeClass('d-none');
+
+    // Saving result of the search 
+    table.on('search.dt', async function(){
         
-        const inputSearch = $inputSearch.val();
-        const inputCurrentId = $inputCurrentId.val();
+        const valueFilter = table.search();
+        let inputCurrentId = $inputCurrentId.val();
+
         let metadata = '';
-        
-        // variables for search contanct from localstorage object
+
+        console.log(valueFilter);
+
         const userDocumentFound =  
             _.findKey(
                 contactList, 
                 function(contact) { 
-                    return contact.document == inputSearch.charAt(0).toUpperCase() + inputSearch.slice(1); 
+                    return contact.document == valueFilter.charAt(0).toUpperCase() + valueFilter.slice(1); 
                 }
             )
         ;
@@ -51,7 +88,7 @@ $(document).ready(async function(){
             _.findKey(
                 contactList, 
                 function(contact) { 
-                    return contact.first_name == inputSearch.charAt(0).toUpperCase() + inputSearch.slice(1); 
+                    return contact.first_name == valueFilter.charAt(0).toUpperCase() + valueFilter.slice(1); 
                 }
             )
         ;
@@ -59,62 +96,49 @@ $(document).ready(async function(){
             _.findKey(
                 contactList, 
                 function(contact) { 
-                    return contact.email == inputSearch; 
+                    return contact.email == valueFilter; 
                 }
             )
         ;
-        
-        // compiling handlebars 
-        const source = document.getElementById("result-request").innerHTML;
-        const template = Handlebars.compile(source);
-        let html = '';
-        
+
         // validating result of the search
         if(contactList[userDocumentFound]){
 
             metadata = JSON.stringify(contactList[userDocumentFound]);
             await callServiceSaveRequest(inputCurrentId,metadata);
-           
-            html = template(contactList[userDocumentFound]);
 
         } else if(contactList[userNameFound]) {
             
             metadata = JSON.stringify(contactList[userNameFound]);
             await callServiceSaveRequest(inputCurrentId,metadata);
-           
-            html = template(contactList[userNameFound]);
-
-            
             
         } else if(contactList[userEmailFound]) {
             
             metadata = JSON.stringify(contactList[userEmailFound]);
             await callServiceSaveRequest(inputCurrentId,metadata);
-            html = template(contactList[userEmailFound]);
-            
-        } else {
-            html = `
-                <div class="container">
-                    <div class='row'>
-                        <div class='col-12'>
-                            <h1 class='text-center'>No hay resultado</h1>
-                        </div>
-                    </div>
-                </div>
-            `;
+        
         }
-
-        // launch popup
-        $modalSearchResult.find('.modal-body').empty().append(html);
-        $modalSearchResult.modal('show');
 
     });
 
+    $dataTableContact.find('tbody').on('click', 'a.details-user',function(){
+        
+        const tr = $(this).closest('tr');
+        const row = table.row( tr );
+        
+        const source = document.getElementById("result-request").innerHTML;
+        const template = Handlebars.compile(source);
+        const html = template(row.data());
+    
+        $modalSearchResult.find('.modal-body').empty().append(html);
+        $modalSearchResult.modal('show');
+    
+    });
    
 });
 
 const getContactList = async () => {
-    return axios.get('http://www.mocky.io/v2/5d9f39263000005d005246ae?mocky-delay=10s');
+    return axios.get('http://www.mocky.io/v2/5d9f39263000005d005246ae?mocky-delay=1s');
 };
 
 const callServiceSaveRequest = async (userId,metadata) => {
@@ -139,3 +163,4 @@ const callServiceSaveRequest = async (userId,metadata) => {
     ;
 
 }
+
