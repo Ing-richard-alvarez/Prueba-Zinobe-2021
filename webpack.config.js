@@ -1,43 +1,27 @@
 const path = require('path');
-//const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const LodashModuleReplacementPlugin = require('lodash-webpack-plugin');
 const TerserPlugin = require("terser-webpack-plugin");
+//const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+//const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 
 module.exports = [
     {
-        entry: './resources/assets/css/index.scss',
+        mode: "development",
+        entry: {
+            index: './resources/assets/js/index.js',
+            login: './resources/assets/js/login.js',
+            register: './resources/assets/js/register.js',
+        },
         output: {
-            path: path.resolve(__dirname, './public/dist/css'),
-            filename: 'index.css'
-        },
-        module: {
-            rules: [
-                {
-                    test: /\.(scss|css)$/,
-                    use: ['style-loader', 'css-loader', 'sass-loader'],
-                    exclude: /node_modules/
-                },
-            ]
-        },
-        mode: "development"
-    },
-    {
-        entry: './resources/assets/js/index.js',
-        output: {
-            path: path.resolve(__dirname, './public/dist/js'),
-            filename: 'index.js'
-        },
-        resolve: {
-            alias: {
-              components: path.resolve(__dirname, 'resources/assets/js'),
-            },
-            extensions: ['.js'],
+            filename: '[name].js',
+            path: __dirname + '/public/dist/js',
         },
         module: {
             rules: [
                 {
                     test: /\.js$/,
                     exclude: /node_modules/,
+                    issuer: [ /\.css$/, path.resolve(__dirname, "./resources/assets/css") ],
                     use: {
                         loader: 'babel-loader',
                         options: {
@@ -54,6 +38,22 @@ module.exports = [
                             }]]
                         }
                     }
+                },
+                {
+                    test: /\.css$/,
+                    use: [
+                    // [style-loader](/loaders/style-loader)
+                    { loader: 'style-loader' },
+                    // [css-loader](/loaders/css-loader)
+                    {
+                        loader: 'css-loader',
+                        options: {
+                        modules: true
+                        }
+                    },
+                    // [sass-loader](/loaders/sass-loader)
+                    { loader: 'sass-loader' }
+                    ]
                 }
             ]
         },
@@ -71,135 +71,28 @@ module.exports = [
               }),
             ],
         },
-        mode: "development"
-    },
-    {
-        entry: './resources/assets/css/login.scss',
-        output: {
-            path: path.resolve(__dirname, 'public/dist/css'),
-            filename: 'login.css'
-        },
-        module: {
-            rules: [
-                {
-                    test: /\.(scss|css)$/,
-                    use: ['style-loader', 'css-loader', 'sass-loader'],
-                    exclude: /node_modules/
-                },
-            ]
-        },
-        mode: "development"
-    },
-    {
-        entry: './resources/assets/js/login.js',
-        output: {
-            path: path.resolve(__dirname, './public/dist/js'),
-            filename: 'login.js'
-        },
-        module: {
-            rules: [
-                {
-                    test: /\.js$/,
-                    exclude: /node_modules/,
-                    use: {
-                        loader: 'babel-loader',
-                        options: {
-                            'plugins': ['lodash'],
-                            'presets': [['@babel/preset-env', {
-                                targets: [
-                                'last 2 versions',
-                                'not dead',
-                                '> 0.2%',
-                                'not ie 11'
-                                ],
-                                useBuiltIns: 'entry',
-                                corejs: 3            
-                            }]]
-                        }
-                    }
-                }
-            ]
-        },
-        'plugins': [
-            new LodashModuleReplacementPlugin({
-                'collections': true,
-                'paths': true
-            })
-        ],
-        optimization: {
-            minimize: true,
-            minimizer: [
-              new TerserPlugin({
-                parallel: true,
-              }),
-            ],
-        },
-        mode: "development"
-    },
-    {
-        entry: './resources/assets/css/register.scss',
-        output: {
-            path: path.resolve(__dirname, './public/dist/css'),
-            filename: 'register.css'
-        },
-        module: {
-            rules: [
-                {
-                    
-                    test: /\.(scss|css)$/,
-                    use: ['style-loader', 'css-loader', 'sass-loader'],
-                    exclude: /node_modules/
-                    
-                },
-            ]
-        },
-        mode: "development"
-    },
-    {
-        entry: './resources/assets/js/register.js',
-        output: {
-            path: path.resolve(__dirname, './public/dist/js'),
-            filename: 'register.js'
-        },
-        module: {
-            rules: [
-                {
-                    test: /\.js$/,
-                    exclude: /node_modules/,
-                    use: {
-                        loader: 'babel-loader',
-                        options: {
-                            'plugins': ['lodash'],
-                            'presets': [['@babel/preset-env', {
-                                targets: [
-                                'last 2 versions',
-                                'not dead',
-                                '> 0.2%',
-                                'not ie 11'
-                                ],
-                                useBuiltIns: 'entry',
-                                corejs: 3            
-                            }]]
-                        }
-                    }
-                }
-            ]
-        },
-        'plugins': [
-            new LodashModuleReplacementPlugin({
-                'collections': true,
-                'paths': true
-            })
-        ],
-        optimization: {
-            minimize: true,
-            minimizer: [
-              new TerserPlugin({
-                parallel: true,
-              }),
-            ],
-        },
-        mode: "development"
-    }
     
-];
+    },
+    {
+        mode: "development",
+        entry: {
+            index: './resources/assets/css/index.scss',
+            login: './resources/assets/css/login.scss',
+            register: './resources/assets/css/register.scss',
+        },
+        output: {
+            filename: '[name].css',
+            path: __dirname + '/public/dist/css',
+        },
+        module: {
+            rules: [
+                {
+                    test: /\.(scss|css)$/,
+                    use: ['style-loader', 'css-loader', 'sass-loader'],
+
+                    exclude: /node_modules/
+                },
+            ]
+        }
+    }
+]

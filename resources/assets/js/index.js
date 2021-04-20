@@ -3,6 +3,7 @@ import "regenerator-runtime/runtime";
 
 import $ from 'jquery';
 import 'bootstrap/dist/js/bootstrap.bundle';
+import 'bootstrap/dist/css/bootstrap.css';
 
 import axios from 'axios';
 import _ from 'lodash';
