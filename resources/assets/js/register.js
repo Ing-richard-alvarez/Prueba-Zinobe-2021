@@ -53,12 +53,12 @@ var _errorList = {
 
 var sendingRequest = false;
 
-
 $(document).ready(async function(){
     
+    const $form = $('#register-form');    
     const $btnSubmit = $('#btn-register-submit',$form);
     let $countryListSelect = $('#country');
-    const $form = $('#register-form');
+
 
     //Inputmask for document input
     var input = document.getElementById("document");
